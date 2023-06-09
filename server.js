@@ -7,9 +7,8 @@ const MongoDBSession = require("connect-mongodb-session")(session);
 const passport = require("passport");
 const cors = require("cors");
 const path = require("path");
-
 const passportSetup = require("./passport");
-const authRoute = require("./routes/auth.");
+const authRoute = require("./routes/auth");
 const User = require("./models/user");
 
 const app = express();
@@ -22,11 +21,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(express.static(path.join(__dirname, "../Frontend/build")));
 
-const mongoURL = "mongodb://127.0.0.1:27017/twitterDB";
-mongoose.connect(mongoURL);
+mongoose.connect("mongodb://127.0.0.1:27017/twitterDB");
 
 const store = new MongoDBSession({
-    uri: mongoURL,
+    uri: "mongodb://127.0.0.1:27017/twitterDB",
     collection: "sessions"
 })
 
@@ -40,57 +38,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.use(User.createStrategy());
-
-app.post("/signup", function (req, res) {
-
-    User.register({ username: req.body.username }, req.body.password, function (err, user) {
-
-        if (req.user){
-            res.status(200).send({
-                Registered: true,
-                message: "Registration successful.",
-                user: user,
-                cookies: req.cookies
-            })
-        }
-        else {
-            res.status(401).send({
-                registered: false,
-                message: "Registration failed.",
-                error: err
-            })
-        }
-    })
-})
-
-app.post("/login", function (req, res) {
-
-    const user = new User({
-        username: req.body.username,
-        password: req.body.password
-    })
-
-    req.login(user, function (err) {
-
-        if (err){
-            res.status(401).send({
-                loggedIn: false,
-                message: "Login failure.",
-                error: err
-            })
-        }
-        else {
-            passport.authenticate("local")(req, res, () => {
-                res.status(200).send({
-                    loggedIn: true,
-                    message: "Login Successful",
-                    user: req.user,
-                    cookies: req.cookies
-                })
-            })                
-        }
-    })
-})
 
 app.use("/auth", authRoute);
 
