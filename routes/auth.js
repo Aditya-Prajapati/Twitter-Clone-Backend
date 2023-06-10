@@ -5,14 +5,14 @@ const { passwordStrength } = require('check-password-strength')
 
 const app = express();
 
-app.get("/google", passport.authenticate("google", { scope:["profile"] }));
+app.get("/google", passport.authenticate("google", { scope:["profile", "email"] }));
 
 app.get("/google/callback", passport.authenticate("google", { 
     failureRedirect: "http://localhost:3000",
     successRedirect: "http://localhost:3000" + "/home"
 }))
 
-app.post("/signup", function (req, res) {
+app.post("/signup", (req, res) => {
 
     User.find({ username: req.body.username })
         .then((response) => {
@@ -64,14 +64,14 @@ app.post("/signup", function (req, res) {
         })
 })
 
-app.post("/login", function (req, res) {
+app.post("/login", (req, res) => {
 
     const user = new User({
         username: req.body.username,
         password: req.body.password
     })
 
-    req.login(user, function (err) {
+    req.login(user, (err) => {
 
         if (err){
             res.status(401).send({
@@ -119,7 +119,7 @@ app.get("/login/failure", (req, res) => {
 
 app.get("/logout", (req, res) => {
 
-    req.logout(function(err){
+    req.logout((err) => {
         if (err){
             res.status(500).send({
                 logout: false,
