@@ -44,10 +44,9 @@ passport.use(User.createStrategy());
 
 app.use("/auth", authRoute);
 
-app.use("/posttweet", (req, res) => {
+app.use("/posttweets", (req, res) => {
 
     if (req.isAuthenticated()) {
-        
         try{
             Tweet.findOrCreate({ username: req.body.username }, (err, user) => {{
                 const tweet = {
@@ -77,6 +76,36 @@ app.use("/posttweet", (req, res) => {
         }} 
     } 
     else {
+        res.status(401).send({
+            message: "Unauthorized."
+        });
+    }
+})
+
+app.use("/gettweets", (req, res) => {
+
+    if (req.isAuthenticated()) {
+        
+        try{
+            Tweet.findOne(
+                { username: req.user.username }
+            )
+            .then((response) => {
+                res.status(200).send({
+                    message: "Tweets are successfully send.",
+                    tweets: (response == null) ? [] : response.tweets
+                })
+            })
+        }
+        catch{(err) => {
+            console.log(err);
+            res.status(500).send({
+                message: "Internal server error."
+            })
+        }} 
+    } 
+    else {
+        console.log("Unauthorized fetching tweet request.");
         res.status(401).send({
             message: "Unauthorized."
         });

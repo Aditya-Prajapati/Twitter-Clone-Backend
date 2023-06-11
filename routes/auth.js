@@ -27,25 +27,27 @@ app.post("/signup", (req, res) => {
                     return;
                 }
 
-                User.register({ username: req.body.username }, req.body.password, function (err, user) {
+                User.register(
+                    { username: req.body.username, name: req.body.name, joined: `${new Date().toLocaleString("default", { month: "long" })} ${new Date().getFullYear()}` }, req.body.password, 
+                    function (err, user) {
 
-                    if (user){
-                        res.status(200).send({
-                            registered: true,
-                            message: "Registration successful.",
-                            user: user,
-                            cookies: req.cookies
-                        })
-                    }
-                    else {
-                        console.log(err);
-                        res.status(500).send({
-                            registered: false,
-                            message: "Registration failed.",
-                            error: err
-                        })
-                    }
-                })
+                        if (user){
+                            res.status(200).send({
+                                registered: true,
+                                message: "Registration successful.",
+                                user: user,
+                                cookies: req.cookies
+                            })
+                        }
+                        else {
+                            console.log(err);
+                            res.status(500).send({
+                                registered: false,
+                                message: "Registration failed.",
+                                error: err
+                            })
+                        }
+                    })
             }
             else {
                 res.status(403).send({
@@ -94,12 +96,12 @@ app.post("/login", (req, res) => {
 })
 
 app.get("/login/success", (req, res) => {
-
-    if (req.user){
+    
+    if (req.isAuthenticated()){
         res.status(200).send({
             loggedIn: true,
             message: "LoggedIn Successfully.",
-            user: req.user,
+            user: req.user
         })
     }
     else {

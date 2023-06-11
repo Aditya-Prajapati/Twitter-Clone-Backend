@@ -8,7 +8,8 @@ const tweetSchema = new mongoose.Schema({
         {
             date: String,
             time: String,
-            content: String
+            content: String,
+            likes: Number
         }
     ]
 });

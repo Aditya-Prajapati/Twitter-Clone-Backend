@@ -10,15 +10,17 @@ passport.use(new GoogleStrategy({
 },
     function (accessToken, refreshToken, profile, cb) {
 
-        User.findOrCreate({ username: profile.emails[0].value, googleId: profile.id }, function (err, user) {
-            return cb(err, user);
+        User.findOrCreate(
+            { username: profile.emails[0].value, name: profile.displayName, joined: `${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`, googleId: profile.id }, 
+            function (err, user) {
+                return cb(err, user);
         });
     }
 ));
 
 passport.serializeUser(function (user, cb) {
     process.nextTick(function () {
-        return cb(null, { id: user.id, username: user.username, name: user.displayName });
+        return cb(null, { name: user.name, joined: `${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`, username: user.username });
     });
 });
 
