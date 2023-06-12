@@ -11,7 +11,12 @@ passport.use(new GoogleStrategy({
     function (accessToken, refreshToken, profile, cb) {
 
         User.findOrCreate(
-            { username: profile.emails[0].value, name: profile.displayName, joined: `${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`, googleId: profile.id }, 
+            { 
+                username: profile.emails[0].value,
+                name: profile.displayName, 
+                joined: `${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`, 
+                googleId: profile.id 
+            }, 
             function (err, user) {
                 return cb(err, user);
         });

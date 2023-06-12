@@ -4,14 +4,12 @@ const findOrCreate = require("mongoose-findorcreate");
 
 const tweetSchema = new mongoose.Schema({
     username: String,
-    tweets: [
-        {
-            date: String,
-            time: String,
-            content: String,
-            likes: Number
-        }
-    ]
+    content: String,
+    likes: Number,
+    comments: Number,
+    date: String,
+    time: String,
+    likedBy: [String]
 });
 
 tweetSchema.plugin(passportLocalMongoose);

@@ -8,11 +8,12 @@ const passport = require("passport");
 const findOrCreate = require("mongoose-findorcreate");
 const cors = require("cors");
 const path = require("path");
-const passportSetup = require("./passport");
-const authRoute = require("./routes/auth");
 
+const passportSetup = require("./passport");
 const User = require("./models/user");
 const Tweet = require("./models/tweet");
+const authRoute = require("./routes/auth");
+const tweetRoute = require("./routes/tweet");
 
 const app = express();
 
@@ -39,78 +40,10 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-
 passport.use(User.createStrategy());
 
 app.use("/auth", authRoute);
-
-app.use("/posttweets", (req, res) => {
-
-    if (req.isAuthenticated()) {
-        try{
-            Tweet.findOrCreate({ username: req.body.username }, (err, user) => {{
-                const tweet = {
-                    date: `${new Date().getDate()}-${new Date().getMonth()+1}-${new Date().getFullYear()}`,
-                    time: `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`,
-                    content: req.body.tweetContent
-                }
-
-                Tweet.updateOne(
-                    { username: req.body.username },
-                    { $push: { tweets: tweet } }
-                )
-                .then((response) => {
-                    if (response.acknowledged){
-                        res.status(200).send({
-                            message: "Tweet has been posted."
-                        })
-                    }
-                })
-            }})
-        }
-        catch{(err) => {
-            console.log(err);
-            res.status(500).send({
-                message: "Internal server error."
-            })
-        }} 
-    } 
-    else {
-        res.status(401).send({
-            message: "Unauthorized."
-        });
-    }
-})
-
-app.use("/gettweets", (req, res) => {
-
-    if (req.isAuthenticated()) {
-        
-        try{
-            Tweet.findOne(
-                { username: req.user.username }
-            )
-            .then((response) => {
-                res.status(200).send({
-                    message: "Tweets are successfully send.",
-                    tweets: (response == null) ? [] : response.tweets
-                })
-            })
-        }
-        catch{(err) => {
-            console.log(err);
-            res.status(500).send({
-                message: "Internal server error."
-            })
-        }} 
-    } 
-    else {
-        console.log("Unauthorized fetching tweet request.");
-        res.status(401).send({
-            message: "Unauthorized."
-        });
-    }
-})
+app.use("/tweet", tweetRoute);
 
 app.get("*", (req, res) => {
     res.status(404).send({
