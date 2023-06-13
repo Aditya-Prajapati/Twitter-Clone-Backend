@@ -45,6 +45,33 @@ passport.use(User.createStrategy());
 app.use("/auth", authRoute);
 app.use("/tweet", tweetRoute);
 
+app.get("/getusers", (req, res) => {
+
+    if (req.isAuthenticated()){
+        User.aggregate([
+            { $match: { "username": { $ne: req.user.username} }},
+            { $sample: { size: 2 }}
+        ])
+        .then((docs) => {
+            res.status(200).send({
+                message: "Users are successfully fetched.",
+                randomUsers: docs
+            })
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).send({
+                message:"Internal server error"
+            })
+        })
+    }
+    else {
+        res.status(401).send({
+            message: "Unauthorized."
+        });
+    }
+})
+
 app.get("*", (req, res) => {
     res.status(404).send({
         message: "Not Found"

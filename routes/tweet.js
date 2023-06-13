@@ -3,17 +3,23 @@ const Tweet = require("../models/tweet");
 
 const app = express();
 
+let DATE = `${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`;
+let TIME = `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`;
+
 app.post("/posttweets", (req, res) => {
 
     if (req.isAuthenticated()) {
+        console.log(req.body);
         const tweet = {
+            name: req.body.name,
             username: req.body.username,
             content: req.body.tweetContent,
             likes: 0,
             comments: 0,
-            date: `${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}`,
-            time: `${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`,
-            likedBy: []
+            date: DATE,
+            time: TIME,
+            likedBy: [],
+            commentedBy: []
         }
 
         Tweet.create(tweet)
@@ -65,6 +71,7 @@ app.get("/gettweets", (req, res) => {
 
 app.post("/deletetweet", (req, res) => {
 
+    console.log(req.user);
     if (req.isAuthenticated()) {
         Tweet.deleteOne({ _id: req.body.tweetId })
             .then(() => {
@@ -128,6 +135,76 @@ app.post("/liketweet", (req, res) => {
                         })
                 }
 
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).send({
+                    message: "Internal server error."
+                })
+            })
+    }
+    else {
+        res.status(401).send({
+            message: "Unauthorized."
+        });
+    }
+})
+
+app.post("/comment", (req, res) => {
+    if (req.isAuthenticated()){
+        Tweet.findById( {_id: req.body.tweetId} )
+            .then((doc) => {
+
+                let user = {
+                    name: req.user.name,
+                    username: req.user.username,
+                    content: req.body.tweetContent,
+                    likes: 0,
+                    comments: 0,
+                    date: DATE,
+                    time: TIME
+                }
+                
+                Tweet.updateOne( 
+                    {_id: req.body.tweetId}, 
+                    {
+                        $push: { commentedBy: user }
+                    }
+                )
+                .then(() => {
+                    res.status(200).send({
+                        message: "Comment is successfully posted"
+                    })
+                })
+                .catch((err) => {
+                    console.log(err);
+                    res.status(500).send({
+                        message: "Internal server error."
+                    })
+                })
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).send({
+                    message: "Internal server error."
+                })
+            })
+    }
+    else {
+        res.status(401).send({
+            message: "Unauthorized."
+        });
+    }
+})
+
+app.post("/getcomments", (req, res) => {
+    if (req.isAuthenticated()){
+        Tweet.findOne({ _id: req.body.tweetId })
+            .then((doc) => {
+                res.status(200).send({
+                    message: "Commments are fetched successfully",
+                    commentedBy: doc.commentedBy
+                })
             })
             .catch((err) => {
                 console.log(err);
