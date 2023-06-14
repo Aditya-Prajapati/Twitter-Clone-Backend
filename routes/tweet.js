@@ -69,6 +69,33 @@ app.get("/gettweets", (req, res) => {
     }
 })
 
+app.get("/gettweet/:tweetId", (req, res) => {
+
+    if (req.isAuthenticated()) {
+        Tweet.findById({ _id: req.params.tweetId })
+            .then((doc) => {
+                res.status(200).send({
+                    message: "Tweet is successfully sent.",
+                    tweet: doc
+                })
+            })
+            .catch (
+                (err) => {
+                    console.log(err);
+                    res.status(500).send({
+                        message: "Internal server error."
+                    })
+                }
+            )
+    }
+    else {
+        console.log("Unauthorized fetching tweet request.");
+        res.status(401).send({
+            message: "Unauthorized."
+        });
+    }
+})
+
 app.post("/deletetweet", (req, res) => {
 
     console.log(req.user);
