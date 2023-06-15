@@ -12,6 +12,7 @@ const path = require("path");
 const passportSetup = require("./passport");
 const User = require("./models/user");
 const Tweet = require("./models/tweet");
+const Comment = require("./models/comment");
 const authRoute = require("./routes/auth");
 const tweetRoute = require("./routes/tweet");
 

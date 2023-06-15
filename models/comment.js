@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 const passportLocalMongoose = require("passport-local-mongoose");
 const findOrCreate = require("mongoose-findorcreate");
-const Comment = require("./comment");
 
-const tweetSchema = new mongoose.Schema({
+const commentSchema = new mongoose.Schema({
+    commentId: String, // could be tweetId if it is a direct comment
     name: String,
     username: String,
     content: String,
@@ -14,7 +14,7 @@ const tweetSchema = new mongoose.Schema({
     likedBy: [String], // emails of users
 });
 
-tweetSchema.plugin(passportLocalMongoose);
-tweetSchema.plugin(findOrCreate);
+commentSchema.plugin(passportLocalMongoose);
+commentSchema.plugin(findOrCreate);
 
-module.exports = new mongoose.model("Tweet", tweetSchema);
+module.exports = new mongoose.model("Comment", commentSchema);
