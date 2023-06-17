@@ -203,17 +203,27 @@ app.post("/comment", (req, res) => {
         }
 
         Comment.create(comment)
-            .then((response) => {
-                res.status(200).send({
-                    message: "Comment has been successfully posted."
-                })
-            })
             .catch((err) => {
                 console.log(err);
                 res.status(500).send({
                     message: "Internal server error"
                 })
             })
+        
+        const Model = req.body.isComment ? Comment : Tweet;
+        Model.findByIdAndUpdate({ _id: req.body.tweetId }, { comments: req.body.comments + 1 })
+            .then((response) => {
+                res.status(200).send({
+                    message: "Comment has been successfully posted.",
+                    updatedComments: req.body.comments + 1
+                })
+            })   
+            .catch((err) => {
+                console.log(err);
+                res.status(500).send({
+                    message: "Internal server error"
+                })
+            }) 
     }
     else {
         res.status(401).send({
