@@ -9,26 +9,39 @@ passport.use(new GoogleStrategy({
     callbackURL: "http://localhost:8000/auth/google/callback"
 },
     function (accessToken, refreshToken, profile, cb) {
-        // imgLink -> _json.picture
-        User.findOrCreate(
-            { 
-                username: profile.emails[0].value,
-                name: profile.displayName, 
-                joined: `${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`, 
-                googleId: profile.id,
-                picture: profile._json.picture,
-                follows: [],
-                followedBy: []
-            }, 
-            function (err, user) {
-                return cb(err, user);
-        });
+
+        User.findOne({ username: profile.emails[0].value })
+            .then((doc) => {
+                const user = {
+                    username: profile.emails[0].value,
+                    name: profile.displayName, 
+                    joined: `${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`, 
+                    googleId: profile.id,
+                    picture: profile._json.picture,
+                    follows: [],
+                    followedBy: []
+                }
+
+                if (doc === null){
+                    User.create( user )
+                    .then(() => {
+                        return cb(null, user);
+                    })
+                }
+                else {
+                    return cb(null, doc);
+                }
+            })
+            .catch((err) => {
+                console.log("Error in registeration of user.")
+                console.log(err);
+            })
     }
 ));
 
 passport.serializeUser(function (user, cb) {
     process.nextTick(function () {
-        return cb(null, { name: user.name, joined: `${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`, username: user.username, follows: user.follows, followedBy: user.followedBy, picture: user.picture });
+        return cb(null, { name: user.name, joined: user.joined, username: user.username, picture: user.picture, follows: [], followedBy: [] });
     });
 });
 

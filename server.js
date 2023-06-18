@@ -34,7 +34,7 @@ const store = new MongoDBSession({
 })
 
 app.use(session({
-    secret: "THISISTWITTERSECRET",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: store
@@ -46,25 +46,105 @@ passport.use(User.createStrategy());
 app.use("/auth", authRoute);
 app.use("/tweet", tweetRoute);
 
+app.get("/getuser", (req, res) => {
+    if (req.isAuthenticated){
+        User.findOne({ username: req.user.username })
+            .then((doc) => {
+                res.status(200).send({
+                    message: "User is successfully fetched.",
+                    user: doc
+                })
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).send({
+                    message: "Internal server error"
+                })
+            })
+    }
+    else {
+        res.status(401).send({
+            message: "Unauthorized."
+        });
+    }
+})
+
 app.get("/getusers", (req, res) => {
 
-    if (req.isAuthenticated()){
+    if (req.isAuthenticated()) {
         User.aggregate([
-            { $match: { "username": { $ne: req.user.username} }},
-            { $sample: { size: 2 }}
+            { $match: { "username": { $ne: req.user.username }, "followedBy": { $ne: req.user.username } } },
+            { $sample: { size: 4 } }
         ])
-        .then((docs) => {
-            res.status(200).send({
-                message: "Users are successfully fetched.",
-                randomUsers: docs
+            .then((docs) => {
+                res.status(200).send({
+                    message: "Users are successfully fetched.",
+                    randomUsers: docs
+                })
             })
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).send({
-                message:"Internal server error"
+            .catch((err) => {
+                console.log(err);
+                res.status(500).send({
+                    message: "Internal server error"
+                })
             })
-        })
+    }
+    else {
+        res.status(401).send({
+            message: "Unauthorized."
+        });
+    }
+})
+
+app.post("/follow", (req, res) => {
+
+    if (req.isAuthenticated) {
+        User.updateOne(
+            { username: req.body.randomUser.username },
+            { $addToSet: { followedBy: req.user.username } }
+        )
+            .then((response) => {
+                if (response.modifiedCount === 0) {
+                    User.updateOne(
+                        { username: req.body.randomUser.username },
+                        { $pull: { followedBy: req.user.username } }
+                    ).exec()
+
+                    User.findOneAndUpdate(
+                        { username: req.user.username },
+                        { $pull: { follows: req.body.randomUser.username } },
+                        { new: true }
+                    )
+                        .then((doc) => {
+                            console.log(doc);
+                            res.status(200).send({
+                                message: "Follows Decremented",
+                                updatedFollows: doc.follows.length
+                            })
+                        })
+                        
+                }
+                else {
+                    User.findOneAndUpdate(
+                        { username: req.user.username },
+                        { $addToSet: { follows: req.body.randomUser.username } },
+                        { new: true }
+                    )
+                        .then((doc) => {
+                            console.log(doc, "adsf");
+                            res.status(200).send({
+                                message: "Follows Incremented",
+                                updatedFollows: doc.follows.length
+                            })
+                        })
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).send({
+                    message: "Internal server error."
+                })
+            })
     }
     else {
         res.status(401).send({
