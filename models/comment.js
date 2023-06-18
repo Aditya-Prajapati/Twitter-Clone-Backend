@@ -12,6 +12,7 @@ const commentSchema = new mongoose.Schema({
     date: String,
     time: String,
     likedBy: [String], // emails of users
+    picture: String
 });
 
 commentSchema.plugin(passportLocalMongoose);

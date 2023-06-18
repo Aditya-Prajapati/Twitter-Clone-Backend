@@ -28,7 +28,13 @@ app.post("/signup", (req, res) => {
                 }
 
                 User.register(
-                    { username: req.body.username, name: req.body.name, joined: `${new Date().toLocaleString("default", { month: "long" })} ${new Date().getFullYear()}` }, req.body.password, 
+                    {   username: req.body.username, 
+                        name: req.body.name, 
+                        joined: `${new Date().toLocaleString("default", { month: "long" })} ${new Date().getFullYear()}`,
+                        follows: [],
+                        followedBy: []
+                    }, 
+                    req.body.password, 
                     function (err, user) {
 
                         if (user){

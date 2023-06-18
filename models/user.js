@@ -7,7 +7,10 @@ const userSchema = new mongoose.Schema({
     joined: String,
     username: String,
     password: String,
-    googleId: String
+    googleId: String,
+    picture: String,
+    follows: [String],
+    followedBy: [String]
 });
 
 userSchema.plugin(passportLocalMongoose);

@@ -25,6 +25,7 @@ app.post("/posttweets", (req, res) => {
             name: req.body.name,
             username: req.body.username,
             content: req.body.tweetContent,
+            picture: req.user.picture,
             likes: 0,
             comments: 0,
             date: DATE,
@@ -195,6 +196,7 @@ app.post("/comment", (req, res) => {
             name: req.user.name,
             username: req.user.username,
             content: req.body.tweetContent, // commentContent
+            picture: req.user.picture,
             likes: 0,
             comments: 0,
             date: DATE,
@@ -255,28 +257,28 @@ app.post("/getcomments", (req, res) => {
     }
 })
 
-app.get("/getcomments", (req, res) => {
-    if (req.isAuthenticated()) {
-        Comment.find({ commentId: req.body.tweetId }) // might be the commentId too
-            .then((docs) => {
-                res.status(200).send({
-                    message: "Commments are fetched successfully",
-                    comments: docs
-                })
-            })
-            .catch((err) => {
-                console.log(err);
-                res.status(500).send({
-                    message: "Internal server error."
-                })
-            })
-    }
-    else {
-        res.status(401).send({
-            message: "Unauthorized."
-        });
-    }
-})
+// app.get("/getcomments", (req, res) => {
+//     if (req.isAuthenticated()) {
+//         Comment.find({ commentId: req.body.tweetId }) // might be the commentId too
+//             .then((docs) => {
+//                 res.status(200).send({
+//                     message: "Commments are fetched successfully",
+//                     comments: docs
+//                 })
+//             })
+//             .catch((err) => {
+//                 console.log(err);
+//                 res.status(500).send({
+//                     message: "Internal server error."
+//                 })
+//             })
+//     }
+//     else {
+//         res.status(401).send({
+//             message: "Unauthorized."
+//         });
+//     }
+// })
 
 app.get("/getcomments/:tweetId", async (req, res) => {
 

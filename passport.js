@@ -9,13 +9,16 @@ passport.use(new GoogleStrategy({
     callbackURL: "http://localhost:8000/auth/google/callback"
 },
     function (accessToken, refreshToken, profile, cb) {
-
+        // imgLink -> _json.picture
         User.findOrCreate(
             { 
                 username: profile.emails[0].value,
                 name: profile.displayName, 
                 joined: `${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`, 
-                googleId: profile.id 
+                googleId: profile.id,
+                picture: profile._json.picture,
+                follows: [],
+                followedBy: []
             }, 
             function (err, user) {
                 return cb(err, user);
@@ -25,7 +28,7 @@ passport.use(new GoogleStrategy({
 
 passport.serializeUser(function (user, cb) {
     process.nextTick(function () {
-        return cb(null, { name: user.name, joined: `${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`, username: user.username });
+        return cb(null, { name: user.name, joined: `${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`, username: user.username, follows: user.follows, followedBy: user.followedBy, picture: user.picture });
     });
 });
 

@@ -12,6 +12,7 @@ const tweetSchema = new mongoose.Schema({
     date: String,
     time: String,
     likedBy: [String], // emails of users
+    picture: String
 });
 
 tweetSchema.plugin(passportLocalMongoose);
