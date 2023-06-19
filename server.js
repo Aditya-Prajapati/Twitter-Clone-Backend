@@ -46,7 +46,7 @@ passport.use(User.createStrategy());
 app.use("/auth", authRoute);
 app.use("/tweet", tweetRoute);
 
-app.get("/getuser", (req, res) => {
+const getUser = (req, res) => {
     if (req.isAuthenticated){
         User.findOne({ username: req.user.username })
             .then((doc) => {
@@ -67,27 +67,40 @@ app.get("/getuser", (req, res) => {
             message: "Unauthorized."
         });
     }
-})
+}
+
+app.get("/getuser", getUser);
 
 app.get("/getusers", (req, res) => {
 
     if (req.isAuthenticated()) {
-        User.aggregate([
-            { $match: { "username": { $ne: req.user.username }, "followedBy": { $ne: req.user.username } } },
-            { $sample: { size: 4 } }
-        ])
-            .then((docs) => {
-                res.status(200).send({
-                    message: "Users are successfully fetched.",
-                    randomUsers: docs
+        if (req.query.users === "random"){
+            User.aggregate([
+                { $match: { "username": { $ne: req.user.username }, "followedBy": { $not: {
+                    $elemMatch: {
+                      username: req.user.username,
+                      name: req.user.name,
+                      picture: req.user.picture
+                    }
+                }}}},
+                { $sample: { size: 4 } }
+            ])
+                .then((docs) => {
+                    res.status(200).send({
+                        message: "Users are successfully fetched.",
+                        randomUsers: docs
+                    })
                 })
-            })
-            .catch((err) => {
-                console.log(err);
-                res.status(500).send({
-                    message: "Internal server error"
+                .catch((err) => {
+                    console.log(err);
+                    res.status(500).send({
+                        message: "Internal server error"
+                    })
                 })
-            })
+        }
+        else if (req.query.users === "current"){
+            getUser(req, res);
+        }
     }
     else {
         res.status(401).send({
@@ -99,45 +112,132 @@ app.get("/getusers", (req, res) => {
 app.post("/follow", (req, res) => {
 
     if (req.isAuthenticated) {
-        User.updateOne(
-            { username: req.body.randomUser.username },
-            { $addToSet: { followedBy: req.user.username } }
-        )
-            .then((response) => {
-                if (response.modifiedCount === 0) {
-                    User.updateOne(
-                        { username: req.body.randomUser.username },
-                        { $pull: { followedBy: req.user.username } }
-                    ).exec()
+        let currUser = {
+            name: req.user.name,
+            username: req.user.username,
+            picture: req.user.picture
+        }
+        let userToFollow = {
+            name: req.body.userToMap.name,
+            username: req.body.userToMap.username,
+            picture: req.body.userToMap.picture
+        }
 
+        User.findOne({ username: userToFollow.username })
+            .then((doc) => {
+                const exists = (doc.followedBy.filter((followedBy) => {
+                    return (followedBy.username === currUser.username);
+                }))
+
+                if (exists.length === 0){ // not following userToFollow 
                     User.findOneAndUpdate(
-                        { username: req.user.username },
-                        { $pull: { follows: req.body.randomUser.username } },
+                        { username: userToFollow.username }, 
+                        { $push: {followedBy: currUser} },
+                        { new: true }
+                    ).exec()
+                    User.findOneAndUpdate(
+                        { username: currUser.username },
+                        { $push: { follows: userToFollow} },
                         { new: true }
                     )
                         .then((doc) => {
-                            console.log(doc);
-                            res.status(200).send({
-                                message: "Follows Decremented",
-                                updatedFollows: doc.follows.length
-                            })
-                        })
-                        
-                }
-                else {
-                    User.findOneAndUpdate(
-                        { username: req.user.username },
-                        { $addToSet: { follows: req.body.randomUser.username } },
-                        { new: true }
-                    )
-                        .then((doc) => {
-                            console.log(doc, "adsf");
                             res.status(200).send({
                                 message: "Follows Incremented",
                                 updatedFollows: doc.follows.length
                             })
                         })
                 }
+                else { // following userToFollow already
+                    User.findOneAndUpdate(
+                        { username: userToFollow.username }, 
+                        { $pull: {followedBy: currUser} },
+                        { new: true }
+                    ).exec()
+                    User.findOneAndUpdate(
+                        { username: currUser.username },
+                        { $pull: { follows: userToFollow} },
+                        { new: true }
+                    )
+                        .then((doc) => {
+                            res.status(200).send({
+                                message: "Follows Decremented",
+                                updatedFollows: doc.follows.length
+                            })
+                        })
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                res.status(500).send({
+                    message: "Internal server error."
+                })
+            })
+// User.updateOne(
+        //     { username: req.body.userToMap.username },
+        //     { $addToSet: { followedBy: req.user.username } }
+        // )
+        //     .then((response) => {
+        //         if (response.modifiedCount === 0) {
+        //             User.updateOne(
+        //                 { username: req.body.userToMap.username },
+        //                 { $pull: { followedBy: req.user.username } }
+        //             ).exec()
+
+        //             User.findOneAndUpdate(
+        //                 { username: req.user.username },
+        //                 { $pull: { follows: req.body.userToMap.username } },
+        //                 { new: true }
+        //             )
+        //                 .then((doc) => {
+        //                     console.log(doc);
+        //                     res.status(200).send({
+        //                         message: "Follows Decremented",
+        //                         updatedFollows: doc.follows.length
+        //                     })
+        //                 })
+                        
+        //         }
+        //         else {
+        //             User.findOneAndUpdate(
+        //                 { username: req.user.username },
+        //                 { $addToSet: { follows: req.body.userToMap.username } },
+        //                 { new: true }
+        //             )
+        //                 .then((doc) => {
+        //                     console.log(doc, "adsf");
+        //                     res.status(200).send({
+        //                         message: "Follows Incremented",
+        //                         updatedFollows: doc.follows.length
+        //                     })
+        //                 })
+        //         }
+        //     })
+        //     .catch((err) => {
+        //         console.log(err);
+        //         res.status(500).send({
+        //             message: "Internal server error."
+        //         })
+        //     })
+    }
+    else {
+        res.status(401).send({
+            message: "Unauthorized."
+        });
+    }
+})
+
+app.get("/getfollows", (req, res) => {
+
+    // console.log(req.user);
+    if (req.isAuthenticated()){
+        User.findOne({ username: req.user.username })
+            .then((doc) => {
+                console.log(doc);
+                res.status(200).send({
+                    message: "Followers and following are succesfully sent.",
+                    follows: doc.follows,
+                    followedBy: doc.followedBy
+                })
             })
             .catch((err) => {
                 console.log(err);

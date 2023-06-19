@@ -9,8 +9,16 @@ const userSchema = new mongoose.Schema({
     password: String,
     googleId: String,
     picture: String,
-    follows: [String],
-    followedBy: [String]
+    follows: [{
+        name: String,
+        username: String,
+        picture: String
+    }],
+    followedBy: [{
+        name: String,
+        username: String,
+        picture: String
+    }]
 });
 
 userSchema.plugin(passportLocalMongoose);
