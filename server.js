@@ -40,8 +40,10 @@ app.use(session({
     cookie: {
         secure: true, 
         httpOnly: true, 
-        maxAge: 360000000,
-        sameSite: "strict"
+        maxAge: 3600000000,
+        sameSite: "strict",
+        domain: "https://twitter-clone-frontend-in-progress.vercel.app",
+        path: "/",
     },
     store: store
 }));
