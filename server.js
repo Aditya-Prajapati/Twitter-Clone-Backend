@@ -19,7 +19,7 @@ const tweetRoute = require("./routes/tweet");
 const app = express();
 
 app.use(cors({
-    origin: ["https://twitter-clone-frontend-in-progress.vercel.app", "https://twitter-clone-frontend-in-progress-aditya-prajapati.vercel.app", "https://twitter-clone-frontend-in-progress-git-master-aditya-prajapati.vercel.app" ],
+    origin: "*",
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
@@ -43,14 +43,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(User.createStrategy());
-
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'https://twitter-clone-frontend-in-progress.vercel.app');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  next();
-});
 
 app.use("/auth", authRoute);
 app.use("/tweet", tweetRoute);
