@@ -20,7 +20,8 @@ const app = express();
 
 app.use(cors({
     origin: "https://twitter-clone-frontend-in-progress.vercel.app",
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
