@@ -92,7 +92,17 @@ app.post("/login", (req, res) => {
         }
         else {
             passport.authenticate("local")(req, res, () => {
-                console.log(req.cookies);
+                const { user } = req;
+                const cookieOptions = {=
+                  maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+                  httpOnly: true,
+                  secure: true, // Enable this option if using HTTPS
+                };
+        
+                // Set the cookie with the user's ID
+                res.cookie("username", user.username, cookieOptions);
+                console.log("hi");
+                console.log(res.cookie());
                 res.status(200).send({
                     loggedIn: true,
                     message: "Login Successful",
