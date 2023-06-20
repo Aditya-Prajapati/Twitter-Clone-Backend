@@ -89,14 +89,22 @@ app.post("/login", (req, res) => {
             })
         }
         else {
-            passport.authenticate("local")(req, res, () => {
-                res.status(200).send({
-                    loggedIn: true,
-                    message: "Login Successful",
-                    user: req.user,
-                    cookies: req.cookies
-                })
-            })                
+            try {
+          await passport.authenticate("local")(req, res, () => {
+            res.status(200).send({
+              loggedIn: true,
+              message: "Login Successful",
+              user: req.user,
+              cookies: req.cookies
+            });
+          });
+        } catch (error) {
+          res.status(500).send({
+            loggedIn: false,
+            message: "Login error.",
+            error: error
+          });
+        }              
         }
     })
 })
