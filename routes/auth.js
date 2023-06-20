@@ -74,7 +74,6 @@ app.post("/signup", (req, res) => {
 
 app.post("/login", (req, res) => {
 
-    console.log("1");
     const user = new User({
         username: req.body.username,
         password: req.body.password
@@ -90,16 +89,15 @@ app.post("/login", (req, res) => {
             })
         }
         else {
-            console.log("2");
             passport.authenticate("local")(req, res, () => {
+                console.log(req.cookies);
                 res.status(200).send({
                     loggedIn: true,
                     message: "Login Successful",
                     user: req.user,
                     cookies: req.cookies
                 })
-            })       
-            console.log("3");
+            })
         }
     })
 })
