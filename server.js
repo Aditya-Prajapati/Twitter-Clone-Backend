@@ -18,7 +18,10 @@ const tweetRoute = require("./routes/tweet");
 
 const app = express();
 
-app.use(cors());
+app.use(cors(
+    origin: ["https://twitter-clone-frontend-in-progress-git-master-aditya-prajapati.vercel.app", "https://twitter-clone-frontend-in-progress.vercel.app", "https://twitter-clone-frontend-in-progress-aditya-prajapati.vercel.app"],
+    credentials: true
+));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(express.static(path.join(__dirname, "../Frontend/build")));
