@@ -26,7 +26,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(express.static(path.join(__dirname, "../Frontend/build")));
 
-mongoose.connect("mongodb://127.0.0.1:27017/twitterDB");
+mongoose.connect(`mongodb+srv://${process.env.MONGO_ATLAS_USERNAME}:${process.env.MONGO_ATLAS_PASSWORD}@cluster0.kbryens.mongodb.net/twitterDatabase`);
 
 const store = new MongoDBSession({
     uri: "mongodb://127.0.0.1:27017/twitterDB",
