@@ -93,7 +93,7 @@ app.post("/login", (req, res) => {
         else {
             passport.authenticate("local")(req, res, () => {
                 const { user } = req;
-                const cookieOptions = {=
+                const cookieOptions = {
                   maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
                   httpOnly: true,
                   secure: true, // Enable this option if using HTTPS
