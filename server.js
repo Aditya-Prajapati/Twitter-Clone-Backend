@@ -19,7 +19,6 @@ const tweetRoute = require("./routes/tweet");
 const app = express();
 
 app.use(cors(
-    origin: "*",
     credentials: true
 ));
 app.use(bodyParser.json());
