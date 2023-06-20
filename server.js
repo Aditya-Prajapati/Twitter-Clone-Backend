@@ -18,11 +18,7 @@ const tweetRoute = require("./routes/tweet");
 
 const app = express();
 
-app.use(cors({
-    origin: "*",
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE']
-}));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(express.static(path.join(__dirname, "../Frontend/build")));
