@@ -29,7 +29,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 mongoose.connect(`mongodb+srv://${process.env.MONGO_ATLAS_USERNAME}:${process.env.MONGO_ATLAS_PASSWORD}@cluster0.kbryens.mongodb.net/twitterDatabase`);
 
 const store = new MongoDBSession({
-    uri: "mongodb://127.0.0.1:27017/twitterDB",
+    uri: `mongodb+srv://${process.env.MONGO_ATLAS_USERNAME}:${process.env.MONGO_ATLAS_PASSWORD}@cluster0.kbryens.mongodb.net/twitterDatabase`,
     collection: "sessions"
 })
 
