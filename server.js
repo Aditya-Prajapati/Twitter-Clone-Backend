@@ -19,7 +19,7 @@ const tweetRoute = require("./routes/tweet");
 const app = express();
 
 app.use(cors(
-    origin: ["https://twitter-clone-frontend-in-progress-git-master-aditya-prajapati.vercel.app", "https://twitter-clone-frontend-in-progress.vercel.app", "https://twitter-clone-frontend-in-progress-aditya-prajapati.vercel.app"],
+    origin: "*",
     credentials: true
 ));
 app.use(bodyParser.json());
