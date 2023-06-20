@@ -8,8 +8,8 @@ const app = express();
 app.get("/google", passport.authenticate("google", { scope:["profile", "email"] }));
 
 app.get("/google/callback", passport.authenticate("google", { 
-    failureRedirect: "http://localhost:3000",
-    successRedirect: "http://localhost:3000" + "/home"
+    failureRedirect: "https://twitter-clone-frontend-in-progress.vercel.app/",
+    successRedirect: "https://twitter-clone-frontend-in-progress.vercel.app/" + "/home"
 }))
 
 app.post("/signup", (req, res) => {
@@ -135,7 +135,7 @@ app.get("/logout", (req, res) => {
             })
         }
 
-        res.redirect("http://localhost:3000");
+        res.redirect("https://twitter-clone-frontend-in-progress.vercel.app/");
     });
 })
 
