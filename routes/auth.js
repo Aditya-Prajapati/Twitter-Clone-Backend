@@ -74,6 +74,7 @@ app.post("/signup", (req, res) => {
 
 app.post("/login", (req, res) => {
 
+    console.log("1");
     const user = new User({
         username: req.body.username,
         password: req.body.password
@@ -89,22 +90,16 @@ app.post("/login", (req, res) => {
             })
         }
         else {
-            try {
-          await passport.authenticate("local")(req, res, () => {
-            res.status(200).send({
-              loggedIn: true,
-              message: "Login Successful",
-              user: req.user,
-              cookies: req.cookies
-            });
-          });
-        } catch (error) {
-          res.status(500).send({
-            loggedIn: false,
-            message: "Login error.",
-            error: error
-          });
-        }              
+            console.log("2");
+            passport.authenticate("local")(req, res, () => {
+                res.status(200).send({
+                    loggedIn: true,
+                    message: "Login Successful",
+                    user: req.user,
+                    cookies: req.cookies
+                })
+            })       
+            console.log("3");
         }
     })
 })
