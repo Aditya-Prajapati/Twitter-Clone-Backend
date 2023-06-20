@@ -41,7 +41,7 @@ app.use(session({
         secure: true, 
         httpOnly: true, 
         maxAge: 3600000000,
-        sameSite: "strict",
+        // sameSite: "strict",
         domain: "https://twitter-clone-frontend-in-progress.vercel.app",
         path: "/",
     },
