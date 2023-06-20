@@ -1,9 +1,11 @@
 const express = require("express");
 const passport = require("passport");
+const cookieParser = require('cookie-parser');
 const User = require("../models/user");
 const { passwordStrength } = require('check-password-strength')
 
 const app = express();
+app.use(cookieParser());
 
 app.get("/google", passport.authenticate("google", { scope:["profile", "email"] }));
 
