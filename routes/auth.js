@@ -94,9 +94,12 @@ app.post("/login", (req, res) => {
             passport.authenticate("local")(req, res, () => {
                 const { user } = req;
                 const cookieOptions = {
-                  maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-                  httpOnly: true,
-                  secure: true, // Enable this option if using HTTPS
+                  secure: true, 
+                  httpOnly: true, 
+                  maxAge: 3600000000,
+                // sameSite: "strict",
+                  domain: "https://twitter-clone-frontend-in-progress.vercel.app",
+                  path: "/",
                 };
         
                 // Set the cookie with the user's ID
