@@ -8,10 +8,25 @@ const app = express();
 
 app.get("/google", passport.authenticate("google", { scope:["profile", "email"] }));
 
-app.get("/google/callback", passport.authenticate("google", { 
-    failureRedirect: "https://twitter-clone-frontend-in-progress.vercel.app/",
-    successRedirect: "https://twitter-clone-frontend-in-progress.vercel.app/" + "home"
-}))
+app.get("/google/callback", (req, res, next) => {
+  passport.authenticate("google", (err, user) => {
+      req.session.cookie.sameSite = 'none';
+        req.session.cookie.secure = true;
+    if (err) {
+      return res.redirect("https://twitter-clone-frontend-in-progress.vercel.app/login/failure");
+    }
+    if (!user) {
+      return res.redirect("https://twitter-clone-frontend-in-progress.vercel.app/login/failure");
+    }
+    req.login(user, (err) => {
+      if (err) {
+        return res.redirect("https://twitter-clone-frontend-in-progress.vercel.app/login/failure");
+      }
+      return res.redirect("https://twitter-clone-frontend-in-progress.vercel.app/home");
+    });
+  })(req, res, next);
+});
+
 
 app.post("/signup", (req, res) => {
 
@@ -129,16 +144,10 @@ app.get("/login/failure", (req, res) => {
 
 app.get("/logout", (req, res) => {
 
-    req.logout((err) => {
-        if (err){
-            res.status(500).send({
-                logout: false,
-                message: "Logout failed."
-            })
-        }
-
-        res.redirect("https://twitter-clone-frontend-in-progress.vercel.app/");
-    });
+    req.logout();
+    req.session.destroy();
+    res.clearCookie("connect.sid"); 
+    res.redirect("https://twitter-clone-frontend-in-progress.vercel.app/");
 })
 
 module.exports = app;
