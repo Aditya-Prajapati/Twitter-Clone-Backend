@@ -10,8 +10,6 @@ app.get("/google", passport.authenticate("google", { scope:["profile", "email"] 
 
 app.get("/google/callback", (req, res, next) => {
   passport.authenticate("google", (err, user) => {
-      req.session.cookie.sameSite = 'none';
-        req.session.cookie.secure = true;
     if (err) {
       return res.redirect("https://twitter-clone-frontend-in-progress.vercel.app/login/failure");
     }
@@ -22,6 +20,8 @@ app.get("/google/callback", (req, res, next) => {
       if (err) {
         return res.redirect("https://twitter-clone-frontend-in-progress.vercel.app/login/failure");
       }
+      req.session.cookie.sameSite = 'none';
+      req.session.cookie.secure = true;
       return res.redirect("https://twitter-clone-frontend-in-progress.vercel.app/home");
     });
   })(req, res, next);
