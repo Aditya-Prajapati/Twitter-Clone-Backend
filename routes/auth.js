@@ -142,13 +142,17 @@ app.get("/login/failure", (req, res) => {
     })
 })
 
-app.post("/logout", function(req, res, next){
-    req.logout(function(err) {
-      if (err) { return next(err); }
-        req.session.destroy();
-        res.clearCookie("connect.sid"); 
-        res.redirect('/');
-    });
-})
+app.post("/logout", function (req, res, next) {
+  req.logout();
+
+  req.session.destroy(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.clearCookie("connect.sid");
+    res.redirect("/");
+  });
+});
+
 
 module.exports = app;
