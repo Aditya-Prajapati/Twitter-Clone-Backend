@@ -92,20 +92,8 @@ app.post("/login", (req, res) => {
         }
         else {
             passport.authenticate("local")(req, res, () => {
-                // const { user } = req;
-                // const cookieOptions = {
-                //   secure: true, 
-                //   httpOnly: true, 
-                //   maxAge: 3600000000,
-                // // sameSite: "strict",
-                //   domain: "https://twitter-clone-frontend-in-progress.vercel.app",
-                //   path: "/",
-                // };
-        
-                // // Set the cookie with the user's ID
-                // res.cookie("username", user.username, cookieOptions);
-                // console.log("hi");
-                // console.log(res.cookie());
+                req.session.cookie.sameSite = 'none';
+                req.session.cookie.secure = true;
                 res.status(200).send({
                     loggedIn: true,
                     message: "Login Successful",
