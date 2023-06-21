@@ -10,7 +10,7 @@ app.get("/google", passport.authenticate("google", { scope:["profile", "email"] 
 
 app.get("/google/callback", passport.authenticate("google", { 
     failureRedirect: "https://twitter-clone-frontend-in-progress.vercel.app/",
-    successRedirect: "/home"
+    successRedirect: "https://twitter-clone-frontend-in-progress.vercel.app/" + "home"
 }))
 
 app.post("/signup", (req, res) => {
