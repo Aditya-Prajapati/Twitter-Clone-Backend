@@ -18,12 +18,15 @@ const tweetRoute = require("./routes/tweet");
 
 const app = express();
 
-app.use(cors({
-    origin: "https://twitter-clone-frontend-in-progress.vercel.app",
-    credentials: true
-}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.set('trust proxy', 1);
+app.use(cors({
+    origin: "https://twitter-clone-frontend-in-progress.vercel.app",
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Set-Cookie"]
+}));
 // app.use(express.static(path.join(__dirname, "../Frontend/build")));
 
 mongoose.connect(`mongodb+srv://${process.env.MONGO_ATLAS_USERNAME}:${process.env.MONGO_ATLAS_PASSWORD}@cluster0.kbryens.mongodb.net/twitterDatabase`);
@@ -37,15 +40,9 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: {
-        secure: true, 
-        httpOnly: true, 
-        maxAge: 3600000000,
-        // sameSite: "strict",
-        domain: "https://twitter-clone-frontend-in-progress.vercel.app",
-        path: "/",
-    },
-    store: store
+    store: store,
+    secure: true,
+    sameSite: 'none'
 }));
 app.use(passport.initialize());
 app.use(passport.session());
