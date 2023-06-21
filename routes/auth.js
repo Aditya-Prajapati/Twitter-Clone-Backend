@@ -5,13 +5,12 @@ const User = require("../models/user");
 const { passwordStrength } = require('check-password-strength')
 
 const app = express();
-app.use(cookieParser());
 
 app.get("/google", passport.authenticate("google", { scope:["profile", "email"] }));
 
 app.get("/google/callback", passport.authenticate("google", { 
     failureRedirect: "https://twitter-clone-frontend-in-progress.vercel.app/",
-    successRedirect: "https://twitter-clone-frontend-in-progress.vercel.app/" + "/home"
+    successRedirect: "/home"
 }))
 
 app.post("/signup", (req, res) => {
@@ -97,8 +96,7 @@ app.post("/login", (req, res) => {
                 res.status(200).send({
                     loggedIn: true,
                     message: "Login Successful",
-                    user: req.user,
-                    cookies: res.cookie()
+                    user: req.user
                 })
             })
         }
