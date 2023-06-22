@@ -177,52 +177,6 @@ app.post("/follow", (req, res) => {
                     message: "Internal server error."
                 })
             })
-// User.updateOne(
-        //     { username: req.body.userToMap.username },
-        //     { $addToSet: { followedBy: req.user.username } }
-        // )
-        //     .then((response) => {
-        //         if (response.modifiedCount === 0) {
-        //             User.updateOne(
-        //                 { username: req.body.userToMap.username },
-        //                 { $pull: { followedBy: req.user.username } }
-        //             ).exec()
-
-        //             User.findOneAndUpdate(
-        //                 { username: req.user.username },
-        //                 { $pull: { follows: req.body.userToMap.username } },
-        //                 { new: true }
-        //             )
-        //                 .then((doc) => {
-        //                     console.log(doc);
-        //                     res.status(200).send({
-        //                         message: "Follows Decremented",
-        //                         updatedFollows: doc.follows.length
-        //                     })
-        //                 })
-                        
-        //         }
-        //         else {
-        //             User.findOneAndUpdate(
-        //                 { username: req.user.username },
-        //                 { $addToSet: { follows: req.body.userToMap.username } },
-        //                 { new: true }
-        //             )
-        //                 .then((doc) => {
-        //                     console.log(doc, "adsf");
-        //                     res.status(200).send({
-        //                         message: "Follows Incremented",
-        //                         updatedFollows: doc.follows.length
-        //                     })
-        //                 })
-        //         }
-        //     })
-        //     .catch((err) => {
-        //         console.log(err);
-        //         res.status(500).send({
-        //             message: "Internal server error."
-        //         })
-        //     })
     }
     else {
         res.status(401).send({
