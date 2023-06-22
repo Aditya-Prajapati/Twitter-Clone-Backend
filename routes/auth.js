@@ -142,12 +142,17 @@ app.get("/login/failure", (req, res) => {
     })
 })
 
-app.post("/logout", function(req, res, next) {
-  req.logout(function(err) {
-    if (err) { return next(err); }
-    res.redirect('/');
-  })
-})
+app.post('/logout', (req, res) => {
+    req.logout(function (err) {
+        if (err) {
+            console.log(err);
+            res.status(500).send({
+                message: "There was an error logging out."
+            })
+        }
+        res.redirect('/');
+    });
+});
 
 
 module.exports = app;
