@@ -142,7 +142,7 @@ app.get("/login/failure", (req, res) => {
     })
 })
 
-app.post('/logout', (req, res) => {
+app.post("/logout", (req, res) => {
     req.logout(function (err) {
         if (err) {
             console.log(err);
@@ -150,7 +150,9 @@ app.post('/logout', (req, res) => {
                 message: "There was an error logging out."
             })
         }
-        res.redirect('/');
+        res.status(200).send({
+            message: "Successful logout"
+        })
     });
 });
 
