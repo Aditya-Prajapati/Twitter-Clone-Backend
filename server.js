@@ -22,7 +22,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('trust proxy', 1);
 app.use(cors({
-    origin: "https://twitter-clone-frontend-in-progress.vercel.app",
+    origin: "https://twitterclonev1.vercel.app",
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
     exposedHeaders: ["Set-Cookie"]
