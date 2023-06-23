@@ -6,7 +6,7 @@ const User = require("./models/user");
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "https://twitter-clone-backend-in-progress.vercel.app/auth/google/callback"
+    callbackURL: "https://twitterclonebackendv1/auth/google/callback"
 },
     function (accessToken, refreshToken, profile, cb) {
 
